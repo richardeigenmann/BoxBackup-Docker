@@ -1,8 +1,8 @@
-# docker build -t richardeigenmann/boxbackupdaemon-arm .
-# docker run -d --restart=always --hostname boxbackup -v /usb-disk/boxbackup-data/:/boxbackup-data/ -p 2201:2201 --rm=false richardeigenmann/boxbackupdaemon-arm
+# docker build -t richardeigenmann/boxbackupdaemon-x64 .
+# docker run -d --restart=always --hostname boxbackup -v /usb-disk/boxbackup-data/:/boxbackup-data/ -p 2201:2201 --rm=false richardeigenmann/boxbackupdaemon-x64
 
+FROM opensuse:latest
 
-FROM resin/rpi-raspbian
 COPY bbstored.conf /etc/boxbackup/
 COPY raidfile.conf /etc/boxbackup/
 COPY bbstored /usr/bin/
@@ -11,9 +11,11 @@ VOLUME /boxbackup-data/
 
 RUN useradd boxbackup
 
+RUN zypper --non-interactive in db
+
 #Options:
 #  -c <file>  Use the specified configuration file. If -c is omitted, the last
-#             argument is the configuration file, or else the default 
+#             argument is the configuration file, or else the default
 #             [/etc/boxbackup/bbstored.conf]
 #  -D         Debugging mode, do not fork, one process only, one client only
 #  -F         Do not fork into background, but fork to serve multiple clients
@@ -33,7 +35,6 @@ RUN useradd boxbackup
 #  -v         Run more verbosely, increase verbosity level by one, can repeat
 #  -V         Run at maximum verbosity, log everything to console and system
 #  -W <level> Set verbosity to error/warning/notice/info/trace/everything
-
 
 ENTRYPOINT ["/usr/bin/bbstored", "-F", "-T", "-O", "notice", "-o", "/boxbackup-data/logfile"]
 #ENTRYPOINT ["bash"]
