@@ -42,7 +42,7 @@ It needs to contain
 * `server-key.pem` the server's private certificate 
 * `serverCA.pem` the server's public SSL certificate 
 
-Using the able `docker run` command with the `--restart=always` option will tell
+Using the `docker run` command with the `--restart=always` option will tell
 Docker to always start our daemon container when Docker comes up. You need
 to make sure the host starts Docker.
 
