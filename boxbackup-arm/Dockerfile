@@ -7,7 +7,7 @@ FROM arm32v7/gcc
 RUN git clone https://github.com/boxbackup/boxbackup.git
 RUN cd /boxbackup && ./bootstrap 
 RUN cd /boxbackup && ./configure
-RUN cd /boxbackup && make && echo "Finished."
+RUN cd /boxbackup && make -j4 && echo "Finished."
 
 COPY bbstored.conf /etc/boxbackup/
 COPY raidfile.conf /etc/boxbackup/
