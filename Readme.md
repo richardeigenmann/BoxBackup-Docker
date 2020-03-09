@@ -46,4 +46,69 @@ Using the `docker run` command with the `--restart=always` option will tell
 Docker to always start our daemon container when Docker comes up. You need
 to make sure the host starts Docker.
 
+## Creating the certs
+
+```bash
+bbstored-certs ca init
+```
+
+This creates these files:
+
+```
+./ca/roots
+./ca/roots/clientCA.pem
+./ca/roots/clientCA.srl
+./ca/roots/serverCA.pem
+./ca/roots/serverCA.srl
+./ca/keys
+./ca/keys/clientRootKey.pem
+./ca/keys/clientRootCSR.pem
+./ca/keys/serverRootKey.pem
+./ca/keys/serverRootCSR.pem
+```
+
+Then
+
+```bash
+mkdir workdir
+# create a raidfile.conf
+# create a user boxbackup
+sudo bbstored-config workdir server.hostname boxbackup
+```
+
+You get:
+
+
+```bash
+===================================================================
+
+bbstored basic configuration complete.
+
+What you need to do now...
+
+1) Sign gaga/bbstored/host.server.net-csr.pem
+   using the bbstored-certs utility.
+
+2) Install the server certificate and root CA certificate as
+      gaga/bbstored/boxbackup.redirectme.net-cert.pem
+      gaga/bbstored/clientCA.pem
+
+3) You may wish to read the configuration file
+      gaga/bbstored.conf
+   and adjust as appropraite.
+
+4) Create accounts with bbstoreaccounts
+
+5) Start the backup store daemon with the command
+      /usr/local/sbin/bbstored gaga/bbstored.conf
+   in /etc/rc.local, or your local equivalent.
+
+===================================================================
+```
+
+
+For each account
+```bash
+mkdir 00000001
+```
 
