@@ -117,6 +117,20 @@ cd boxbackup-arm
 docker-compose up -d --build
 mkdir ca
 chmod 777 ca
-docker run -it -v $(pwd)/ca/:/ca/ buildboxbackup_caserver
+docker run -it -v $(pwd)/ca/:/ca/ boxbackupxarm_caserver
 bbstored-certs ca init
+```
+
+
+```bash
+cd boxbackup-x64
+docker-compose up -d --build
+mkdir ca
+chmod 777 ca
+docker run -it -v $(pwd)/ca/:/ca/ boxbackupx64_caserver
+# since the ca directory is mounted into the container we must prevent the script from creating it
+sed -i.bak 's/mkdir\(\$cert_dir,0700\)\n\s+&&\s//' /usr/bin/bbstored-certs
+# since the regex doesn't work remove the first mkdir on line 94 with vi
+vi /usr/bin/bbstored-certs
+bbstored-certs ca2 init
 ```

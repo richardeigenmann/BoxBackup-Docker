@@ -4,10 +4,9 @@
 
 FROM arm32v7/gcc AS builder
 RUN git clone https://github.com/boxbackup/boxbackup.git
+RUN apt-get update && apt-get -y install xsltproc
 RUN cd /boxbackup && ./bootstrap
 RUN cd /boxbackup && ./configure
-RUN apt-get update
-RUN apt-get -y install xsltproc
 RUN cd /boxbackup && make -j$(nproc)
 
 FROM arm32v7/debian:stable-slim AS caserver
@@ -17,6 +16,7 @@ COPY bbstored.conf /etc/boxbackup/
 COPY raidfile.conf /etc/boxbackup/
 COPY --from=builder /boxbackup/release/bin/bbstored/bbstored /usr/bin
 COPY --from=builder /boxbackup/bin/bbstored/bbstored-certs /usr/bin
+RUN apt-get update && apt-get -y install vim less
 #VOLUME /ca
 
 FROM arm32v7/debian:stable-slim AS server
@@ -27,6 +27,7 @@ COPY raidfile.conf /etc/boxbackup/
 COPY --from=builder /boxbackup/release/bin/bbstored/bbstored /usr/bin
 COPY --from=builder /boxbackup/release/bin/bbstoreaccounts/bbstoreaccounts /usr/bin
 COPY --from=builder /boxbackup/bin/bbstored/bbstored-config /usr/bin
+RUN apt-get update && apt-get -y install vim less
 #VOLUME /boxbackup-data/
 
 
