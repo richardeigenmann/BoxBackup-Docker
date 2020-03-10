@@ -3,7 +3,7 @@
 # docker exec -it -hostname boxbackup richardeigenmann/boxbackup-x64 bash
 # docker run -d --restart=always --hostname boxbackup -v /usb-disk/boxbackup-data/:/boxbackup-data/ -p 2201:2201 --rm=false richardeigenmann/boxbackup-arm
 
-FROM amd64/gcc AS builder
+FROM amd64/gcc:8 AS builder
 RUN git clone https://github.com/boxbackup/boxbackup.git
 RUN apt-get update && apt-get -y install xsltproc
 RUN cd /boxbackup && ./bootstrap
@@ -22,7 +22,7 @@ RUN apt-get update && apt-get -y install vim less
 
 FROM amd64/debian:stable-slim AS bbserver
 RUN useradd boxbackup
-RUN apt-get update && apt-get -y install openssl
+RUN apt-get update && apt-get -y install openssl libstdc++6
 COPY bbstored.conf /etc/boxbackup/
 COPY raidfile.conf /etc/boxbackup/
 COPY --from=builder /boxbackup/release/bin/bbstored/bbstored /usr/bin

@@ -128,9 +128,12 @@ docker-compose up -d --build
 mkdir ca
 chmod 777 ca
 docker run -it -v $(pwd)/ca/:/ca/ boxbackupx64_caserver
-# since the ca directory is mounted into the container we must prevent the script from creating it
-sed -i.bak 's/mkdir\(\$cert_dir,0700\)\n\s+&&\s//' /usr/bin/bbstored-certs
-# since the regex doesn't work remove the first mkdir on line 94 with vi
-vi /usr/bin/bbstored-certs
-bbstored-certs ca2 init
+bbstored-certs catmp init
+mv /catmp/* /ca/
+chmod -R a+rwx /ca
+
+# back on a different console:
+cd boxbackup-x64
+mkdir usb-disk
+docker run -it --hostname boxbackup -v $(pwd)/usb-disk/:/boxbackup-data/ -p 2201:2201 --rm=false boxbackupx64_bbserver
 ```
