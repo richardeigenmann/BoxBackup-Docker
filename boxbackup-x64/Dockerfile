@@ -2,8 +2,7 @@
 # docker run -it -hostname boxbackup --rm richardeigenmann/boxbackup-arm 
 # docker run -d --restart=always --hostname boxbackup -v /usb-disk/boxbackup-data/:/boxbackup-data/ -p 2201:2201 --rm=false richardeigenmann/boxbackup-arm
 
-FROM arm32v7/gcc
-
+FROM amd64/gcc
 RUN git clone https://github.com/boxbackup/boxbackup.git
 RUN cd /boxbackup && ./bootstrap
 RUN cd /boxbackup && ./configure
@@ -11,25 +10,22 @@ RUN apt-get update
 RUN apt-get install xsltproc
 RUN cd /boxbackup && make -j4
 
-
-FROM arm32v7/debian:stable-slim AS caserver
+FROM amd64/debian:stable-slim AS caserver
 RUN useradd boxbackup
-RUN apt-get update && apt-get -y install openssl
 COPY bbstored.conf /etc/boxbackup/
 COPY raidfile.conf /etc/boxbackup/
 COPY --from=builder /boxbackup/release/bin/bbstored/bbstored /usr/bin
 COPY --from=builder /boxbackup/bin/bbstored/bbstored-certs /usr/bin
-#VOLUME /ca
+VOLUME /ca
 
-FROM arm32v7/debian:stable-slim AS server
+FROM amd64/debian:stable-slim AS bbserver
 RUN useradd boxbackup
-RUN apt-get update && apt-get -y install openssl
 COPY bbstored.conf /etc/boxbackup/
 COPY raidfile.conf /etc/boxbackup/
 COPY --from=builder /boxbackup/release/bin/bbstored/bbstored /usr/bin
 COPY --from=builder /boxbackup/release/bin/bbstoreaccounts/bbstoreaccounts /usr/bin
 COPY --from=builder /boxbackup/bin/bbstored/bbstored-config /usr/bin
-#VOLUME /boxbackup-data/
+VOLUME /boxbackup-data/
 
 
 

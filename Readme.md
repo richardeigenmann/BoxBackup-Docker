@@ -112,3 +112,11 @@ For each account
 mkdir 00000001
 ```
 
+```bash
+cd boxbackup-arm
+docker-compose up -d --build
+mkdir ca
+chmod 777 ca
+docker run -it -v $(pwd)/ca/:/ca/ buildboxbackup_caserver
+bbstored-certs ca init
+```
