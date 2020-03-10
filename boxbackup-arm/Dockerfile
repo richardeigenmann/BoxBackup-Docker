@@ -1,5 +1,6 @@
 # docker build -t richardeigenmann/boxbackup-arm .
 # docker run -it -hostname boxbackup --rm richardeigenmann/boxbackup-arm 
+# docker exec -it -hostname boxbackup richardeigenmann/boxbackup-arm bash
 # docker run -d --restart=always --hostname boxbackup -v /usb-disk/boxbackup-data/:/boxbackup-data/ -p 2201:2201 --rm=false richardeigenmann/boxbackup-arm
 
 FROM arm32v7/gcc AS builder
@@ -19,7 +20,7 @@ COPY --from=builder /boxbackup/bin/bbstored/bbstored-certs /usr/bin
 RUN apt-get update && apt-get -y install vim less
 #VOLUME /ca
 
-FROM arm32v7/debian:stable-slim AS server
+FROM arm32v7/debian:stable-slim AS bbserver
 RUN useradd boxbackup
 RUN apt-get update && apt-get -y install openssl
 COPY bbstored.conf /etc/boxbackup/
@@ -29,8 +30,6 @@ COPY --from=builder /boxbackup/release/bin/bbstoreaccounts/bbstoreaccounts /usr/
 COPY --from=builder /boxbackup/bin/bbstored/bbstored-config /usr/bin
 RUN apt-get update && apt-get -y install vim less
 #VOLUME /boxbackup-data/
-
-
 
 
 #Options:
