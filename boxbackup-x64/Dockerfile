@@ -2,13 +2,13 @@
 # docker run -it -hostname boxbackup --rm richardeigenmann/boxbackup-arm 
 # docker run -d --restart=always --hostname boxbackup -v /usb-disk/boxbackup-data/:/boxbackup-data/ -p 2201:2201 --rm=false richardeigenmann/boxbackup-arm
 
-FROM amd64/gcc
+FROM amd64/gcc AS builder
 RUN git clone https://github.com/boxbackup/boxbackup.git
 RUN cd /boxbackup && ./bootstrap
 RUN cd /boxbackup && ./configure
 RUN apt-get update
 RUN apt-get install xsltproc
-RUN cd /boxbackup && make -j4
+RUN cd /boxbackup && make -j$(nproc)
 
 FROM amd64/debian:stable-slim AS caserver
 RUN useradd boxbackup
@@ -26,8 +26,6 @@ COPY --from=builder /boxbackup/release/bin/bbstored/bbstored /usr/bin
 COPY --from=builder /boxbackup/release/bin/bbstoreaccounts/bbstoreaccounts /usr/bin
 COPY --from=builder /boxbackup/bin/bbstored/bbstored-config /usr/bin
 VOLUME /boxbackup-data/
-
-
 
 
 #Options:

@@ -2,15 +2,13 @@
 # docker run -it -hostname boxbackup --rm richardeigenmann/boxbackup-arm 
 # docker run -d --restart=always --hostname boxbackup -v /usb-disk/boxbackup-data/:/boxbackup-data/ -p 2201:2201 --rm=false richardeigenmann/boxbackup-arm
 
-FROM arm32v7/gcc
-
+FROM arm32v7/gcc AS builder
 RUN git clone https://github.com/boxbackup/boxbackup.git
 RUN cd /boxbackup && ./bootstrap
 RUN cd /boxbackup && ./configure
 RUN apt-get update
-RUN apt-get install xsltproc
-RUN cd /boxbackup && make -j4
-
+RUN apt-get -y install xsltproc
+RUN cd /boxbackup && make -j$(nproc)
 
 FROM arm32v7/debian:stable-slim AS caserver
 RUN useradd boxbackup
