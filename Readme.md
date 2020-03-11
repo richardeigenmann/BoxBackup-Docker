@@ -67,51 +67,6 @@ This creates these files:
 ./ca/keys/serverRootCSR.pem
 ```
 
-Then
-
-```bash
-mkdir workdir
-# create a raidfile.conf
-# create a user boxbackup
-sudo bbstored-config workdir server.hostname boxbackup
-```
-
-You get:
-
-
-```bash
-===================================================================
-
-bbstored basic configuration complete.
-
-What you need to do now...
-
-1) Sign gaga/bbstored/host.server.net-csr.pem
-   using the bbstored-certs utility.
-
-2) Install the server certificate and root CA certificate as
-      gaga/bbstored/boxbackup.redirectme.net-cert.pem
-      gaga/bbstored/clientCA.pem
-
-3) You may wish to read the configuration file
-      gaga/bbstored.conf
-   and adjust as appropraite.
-
-4) Create accounts with bbstoreaccounts
-
-5) Start the backup store daemon with the command
-      /usr/local/sbin/bbstored gaga/bbstored.conf
-   in /etc/rc.local, or your local equivalent.
-
-===================================================================
-```
-
-
-For each account
-```bash
-mkdir 00000001
-```
-
 ```bash
 cd boxbackup-arm
 docker-compose up -d --build
@@ -121,21 +76,20 @@ docker run -it -v $(pwd)/ca/:/ca/ boxbackupxarm_caserver
 bbstored-certs ca init
 ```
 
-
 ```bash
 cd boxbackup-x64
-#docker-compose up -d --build
 docker-compose build
 
-mkdir usb-disk
-mkdir ca
-chmod 777 ca
+mkdir -p boxbackup-data ca
+chmod 777 boxbackup-data ca
 
-docker run -it --hostname boxbackup -v $(pwd)/ca/:/ca/ -v $(pwd)/usb-disk/:/boxbackup-data/ --rm=false boxbackupx64_bbtempserver
+docker run -it --hostname boxbackup -v $(pwd)/ca/:/ca/ -v $(pwd)/boxbackup-data/:/boxbackup-data/ --rm=false boxbackupx64_bbtempserver
+# create server keys
 bbstored-config /etc/boxbackup 0.0.0.0 boxbackup
 cp /etc/boxbackup/bbstored/0.0.0.0-csr.pem /boxbackup-data/
 cp /etc/boxbackup/bbstored/0.0.0.0-csr.pem /ca/
 cp /etc/boxbackup/bbstored/0.0.0.0-key.pem /boxbackup-data/
+chmod a+rwx /boxbackup-data/0.0.0.0-key.pem
 
 bbstoreaccounts create 1 0 900G 920G
 bbstoreaccounts create 2 0 300G 350G
@@ -148,72 +102,75 @@ cp /etc/boxbackup/bbstored/accounts.txt /boxbackup-data/
 
 # Pretend we are the client
 bbackupd-config /etc/box lazy 1 boxbackup.redirectme.net /var/bbackupd /home
-mdkir /ca/client-1
+mkdir /ca/client-1
 cp /etc/box/bbackupd/1-FileEncKeys.raw /ca/client-1/
 cp /etc/box/bbackupd/1-csr.pem /ca/client-1/
+cp /etc/box/bbackupd/1-key.pem /ca/client-1/
 
 bbackupd-config /etc/box lazy 2 boxbackup.redirectme.net /var/bbackupd /home
-mdkir /ca/client-2
+mkdir /ca/client-2
 cp /etc/box/bbackupd/2-FileEncKeys.raw /ca/client-2/
 cp /etc/box/bbackupd/2-csr.pem /ca/client-2/
+cp /etc/box/bbackupd/2-key.pem /ca/client-3/
 
 bbackupd-config /etc/box lazy 3 boxbackup.redirectme.net /var/bbackupd /home
-mdkir /ca/client-3
+mkdir /ca/client-3
 cp /etc/box/bbackupd/3-FileEncKeys.raw /ca/client-3/
 cp /etc/box/bbackupd/3-csr.pem /ca/client-3/
+cp /etc/box/bbackupd/3-key.pem /ca/client-3/
 
 bbackupd-config /etc/box lazy 4 boxbackup.redirectme.net /var/bbackupd /home
-mdkir /ca/client-4
+mkdir /ca/client-4
 cp /etc/box/bbackupd/4-FileEncKeys.raw /ca/client-4/
 cp /etc/box/bbackupd/4-csr.pem /ca/client-4/
+cp /etc/box/bbackupd/4-key.pem /ca/client-4/
 
 bbackupd-config /etc/box lazy 5 boxbackup.redirectme.net /var/bbackupd /home
-mdkir /ca/client-5
+mkdir /ca/client-5
 cp /etc/box/bbackupd/5-FileEncKeys.raw /ca/client-5/
 cp /etc/box/bbackupd/5-csr.pem /ca/client-5/
+cp /etc/box/bbackupd/5-key.pem /ca/client-5/
 
 bbackupd-config /etc/box lazy 6 boxbackup.redirectme.net /var/bbackupd /home
-mdkir /ca/client-6
+mkdir /ca/client-6
 cp /etc/box/bbackupd/6-FileEncKeys.raw /ca/client-6/
 cp /etc/box/bbackupd/6-csr.pem /ca/client-6/
+cp /etc/box/bbackupd/6-key.pem /ca/client-6/
 
 bbackupd-config /etc/box lazy 7 boxbackup.redirectme.net /var/bbackupd /home
-mdkir /ca/client-7
+mkdir /ca/client-7
 cp /etc/box/bbackupd/7-FileEncKeys.raw /ca/client-7/
 cp /etc/box/bbackupd/7-csr.pem /ca/client-7/
+cp /etc/box/bbackupd/7-key.pem /ca/client-7/
 
-exit
+# Sign the certificates
 
-# back on the host command line
-#cd boxbackup-x64
-
-
-docker run -it -v $(pwd)/ca/:/ca/ boxbackupx64_caserver
+# If the root certs don't exist
 bbstored-certs catmp init
 mv /catmp/* /ca/
 chmod -R a+rwx /ca
+echo yes | bbstored-certs ca sign-server /ca/0.0.0.0-csr.pem
 
-bbstored-certs ca sign-server ca/0.0.0.0-csr.pem
-# yes
+cp /ca/servers/0.0.0.0-cert.pem /boxbackup-data/0.0.0.0-cert.pem
+cp /ca/roots/clientCA.pem /boxbackup-data/clientCA.pem
+
+echo yes | bbstored-certs ca sign /ca/client-1/1-csr.pem
+echo yes | bbstored-certs ca sign /ca/client-2/2-csr.pem
+echo yes | bbstored-certs ca sign /ca/client-3/3-csr.pem
+echo yes | bbstored-certs ca sign /ca/client-4/4-csr.pem
+echo yes | bbstored-certs ca sign /ca/client-5/5-csr.pem
+echo yes | bbstored-certs ca sign /ca/client-6/6-csr.pem
+echo yes | bbstored-certs ca sign /ca/client-7/7-csr.pem
 exit
 
-# back on the host command line
-cp ca/servers/0.0.0.0-cert.pem usb-disk/0.0.0.0-cert.pem
-cp ca/roots/clientCA.pem usb-disk/clientCA.pem
+docker run -d --restart=always --hostname boxbackup -v $(pwd)/boxbackup-data/:/boxbackup-data/ -p 2201:2201 --rm=false boxbackupx64_bbserver
 
-bbstored-certs ca sign 1-csr.pem
-bbstored-certs ca sign 2-csr.pem
-bbstored-certs ca sign 3-csr.pem
-bbstored-certs ca sign 4-csr.pem
-bbstored-certs ca sign 5-csr.pem
-bbstored-certs ca sign 6-csr.pem
-bbstored-certs ca sign 7-csr.pem
-
-# start the server container
-docker run -d --restart=always --hostname boxbackup -v $(pwd)/usb-disk/:/boxbackup-data/ -p 2201:2201 --rm=false boxbackupx64_bbserver
-
-
-
+# for the client 
+cp ca/roots/serverCA.pem /etc/boxbackup/bbackupd/
+cp ca/clients/1-cert.pem /etc/boxbackup/bbackupd/
+cp ca/client-1/1-FileEncKeys.raw /etc/boxbackup/bbackupd/
+cp ca/client-1/1-key.pem /etc/boxbackup/bbackupd/
+cp ca/client-1/1-csr.pem /etc/boxbackup/bbackupd/
 ```
 ===================================================================
 

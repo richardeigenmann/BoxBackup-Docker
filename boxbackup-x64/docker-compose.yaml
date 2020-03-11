@@ -10,10 +10,10 @@ services:
     build:
       context: .
       target: builder
-  caserver:
-    build:
-      context: .
-      target: caserver
+  #caserver:
+  #  build:
+  #    context: .
+  #    target: caserver
     #volumes:
     #  - ./ca:/ca
   bbtempserver:

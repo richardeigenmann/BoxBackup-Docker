@@ -10,14 +10,14 @@ RUN cd /boxbackup && ./bootstrap
 RUN cd /boxbackup && ./configure
 RUN cd /boxbackup && make -j$(nproc)
 
-FROM amd64/debian:stable-slim AS caserver
-RUN useradd boxbackup
-RUN apt-get update && apt-get -y install openssl
-COPY bbstored.conf /etc/boxbackup/
-COPY raidfile.conf /etc/boxbackup/
-COPY --from=builder /boxbackup/release/bin/bbstored/bbstored /usr/bin
-COPY --from=builder /boxbackup/bin/bbstored/bbstored-certs /usr/bin
-RUN apt-get update && apt-get -y install vim less
+#FROM amd64/debian:stable-slim AS caserver
+#RUN useradd boxbackup
+#RUN apt-get update && apt-get -y install openssl
+#COPY bbstored.conf /etc/boxbackup/
+#COPY raidfile.conf /etc/boxbackup/
+#COPY --from=builder /boxbackup/release/bin/bbstored/bbstored /usr/bin
+#COPY --from=builder /boxbackup/bin/bbstored/bbstored-certs /usr/bin
+#RUN apt-get update && apt-get -y install vim less
 #VOLUME /ca
 
 FROM amd64/debian:stable-slim AS bbtempserver
@@ -42,8 +42,8 @@ RUN apt-get update && apt-get -y install openssl libstdc++6
 COPY bbstored.conf /etc/boxbackup/
 COPY raidfile.conf /etc/boxbackup/
 COPY --from=builder /boxbackup/release/bin/bbstored/bbstored /usr/bin
-COPY --from=builder /boxbackup/release/bin/bbstoreaccounts/bbstoreaccounts /usr/bin
-COPY --from=builder /boxbackup/bin/bbstored/bbstored-config /usr/bin
+#COPY --from=builder /boxbackup/release/bin/bbstoreaccounts/bbstoreaccounts /usr/bin
+#COPY --from=builder /boxbackup/bin/bbstored/bbstored-config /usr/bin
 #RUN apt-get update && apt-get -y install vim less
 
 #VOLUME /boxbackup-data/
