@@ -6,12 +6,20 @@
 
 version: '3.4'
 services:
+  builder:
+    build:
+      context: .
+      target: builder
   caserver:
     build:
       context: .
       target: caserver
     #volumes:
     #  - ./ca:/ca
+  bbtempserver:
+    build:
+      context: .
+      target: bbtempserver
   bbserver:
     build:
       context: .
