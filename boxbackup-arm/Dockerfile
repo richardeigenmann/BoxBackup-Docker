@@ -56,5 +56,5 @@ RUN apt-get update && apt-get -y install vim less
 #  -W <level> Set verbosity to error/warning/notice/info/trace/everything
 
 
-#ENTRYPOINT ["/usr/bin/bbstored", "-F", "-T", "-O", "notice", "-o", "/boxbackup-data/logfile"]
-ENTRYPOINT ["bash"]
+ENTRYPOINT ["/usr/bin/bbstored", "-F", "-T", "-O", "notice", "-o", "/boxbackup-data/logfile"]
+#ENTRYPOINT ["bash"]
