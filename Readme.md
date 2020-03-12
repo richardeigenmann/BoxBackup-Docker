@@ -164,6 +164,7 @@ echo yes | bbstored-certs ca sign /ca/client-7/7-csr.pem
 exit
 
 docker run -d --restart=always --hostname boxbackup -v $(pwd)/boxbackup-data/:/boxbackup-data/ -p 2201:2201 --rm=false boxbackupx64_bbserver
+docker exec -it boxbackupx64_bbserver bash
 
 # for the client 
 cp ca/roots/serverCA.pem /etc/boxbackup/bbackupd/

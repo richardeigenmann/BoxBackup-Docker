@@ -1,4 +1,4 @@
-# docker build -t richardeigenmann/boxbackup-arm .
+# docker build -t richardeigenmann/boxbackup-x64 .
 # docker run -it -hostname boxbackup richardeigenmann/boxbackup-x64
 # docker exec -it -hostname boxbackup richardeigenmann/boxbackup-x64 bash
 # docker run -d --restart=always --hostname boxbackup -v /usb-disk/boxbackup-data/:/boxbackup-data/ -p 2201:2201 --rm=false richardeigenmann/boxbackup-x64
@@ -10,22 +10,10 @@ RUN cd /boxbackup && ./bootstrap
 RUN cd /boxbackup && ./configure
 RUN cd /boxbackup && make -j$(nproc)
 
-#FROM amd64/debian:stable-slim AS caserver
-#RUN useradd boxbackup
-#RUN apt-get update && apt-get -y install openssl
-#COPY bbstored.conf /etc/boxbackup/
-#COPY raidfile.conf /etc/boxbackup/
-#COPY --from=builder /boxbackup/release/bin/bbstored/bbstored /usr/bin
-#COPY --from=builder /boxbackup/bin/bbstored/bbstored-certs /usr/bin
-#RUN apt-get update && apt-get -y install vim less
-#VOLUME /ca
-
 FROM amd64/debian:stable-slim AS bbtempserver
 RUN useradd boxbackup
 RUN apt-get update && apt-get -y install openssl
-#COPY bbstored.conf /etc/boxbackup/
 COPY raidfile.conf /etc/boxbackup/
-#COPY --from=builder /boxbackup/release/bin/bbstored/bbstored /usr/bin
 COPY --from=builder /boxbackup/release/bin/bbstoreaccounts/bbstoreaccounts /usr/bin
 COPY --from=builder /boxbackup/bin/bbstored/bbstored-config /usr/bin
 COPY --from=builder /boxbackup/bin/bbstored/bbstored-certs /usr/bin
@@ -42,12 +30,8 @@ RUN apt-get update && apt-get -y install openssl libstdc++6
 COPY bbstored.conf /etc/boxbackup/
 COPY raidfile.conf /etc/boxbackup/
 COPY --from=builder /boxbackup/release/bin/bbstored/bbstored /usr/bin
-#COPY --from=builder /boxbackup/release/bin/bbstoreaccounts/bbstoreaccounts /usr/bin
-#COPY --from=builder /boxbackup/bin/bbstored/bbstored-config /usr/bin
-#RUN apt-get update && apt-get -y install vim less
-
-#VOLUME /boxbackup-data/
-
+COPY --from=builder /boxbackup/release/bin/bbstoreaccounts/bbstoreaccounts /usr/bin
+COPY --from=builder /boxbackup/bin/bbstored/bbstored-config /usr/bin
 
 #Options:
 #  -c <file>  Use the specified configuration file. If -c is omitted, the last
