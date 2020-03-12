@@ -86,6 +86,8 @@ mkdir -p boxbackup-data ca
 chmod 777 boxbackup-data ca
 
 docker run -it --hostname boxbackup -v $(pwd)/ca/:/ca/ -v $(pwd)/boxbackup-data/:/boxbackup-data/ --rm=false boxbackupx64_bbtempserver
+# or
+docker run -it --hostname boxbackup -v $(pwd)/ca/:/ca/ -v $(pwd)/boxbackup-data/:/boxbackup-data/ --rm=false boxbackuparm_bbtempserver
 # create server keys
 bbstored-config /etc/boxbackup 0.0.0.0 boxbackup
 cp /etc/boxbackup/bbstored/0.0.0.0-csr.pem /boxbackup-data/

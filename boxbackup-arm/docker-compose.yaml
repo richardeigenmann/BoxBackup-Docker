@@ -1,4 +1,4 @@
-# docker-compose --build
+# docker-compose build
 
 version: '3.4'
 services:
