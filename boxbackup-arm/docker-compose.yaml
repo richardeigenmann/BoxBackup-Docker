@@ -1,20 +1,16 @@
-# docker-compose up -d --build
-# docker run -it -v $(pwd)/ca/:/ca/ buildboxbackup_caserver
-# docker run -d --restart=always --hostname boxbackup -v /usb-disk/boxbackup-data/:/boxbackup-data/ -p 2201:2201 --rm=false
-# docker exec -it buildboxbackup_caserver bash
-# docker exec -it buildboxbackup_bbserver bash
+# docker-compose --build
 
 version: '3.4'
 services:
-  caserver:
+  builder:
     build:
       context: .
-      target: caserver
-    #volumes:
-    #  - ./ca:/ca
+      target: builder
+  bbtempserver:
+    build:
+      context: .
+      target: bbtempserver
   bbserver:
     build:
       context: .
       target: bbserver
-    #volumes:
-    #  - /usb-disk/boxbackup-data:/boxbackup-data

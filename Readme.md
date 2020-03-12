@@ -78,6 +78,8 @@ bbstored-certs ca init
 
 ```bash
 cd boxbackup-x64
+# or
+cd boxbackup-arm
 docker-compose build
 
 mkdir -p boxbackup-data ca
