@@ -179,3 +179,9 @@ cp ca/client-1/1-csr.pem /etc/boxbackup/bbackupd/
 
 # keep the ca directory in a safe place
 ```
+
+## check the account storeage consumption
+```bash
+docker exec -it $(docker ps | grep bbserver | cut -d' ' -f1) bash
+bbstoreaccounts info 1
+```
