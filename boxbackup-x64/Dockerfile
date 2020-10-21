@@ -3,7 +3,7 @@
 # docker exec -it -hostname boxbackup richardeigenmann/boxbackup-x64 bash
 # docker run -d --restart=always --hostname boxbackup -v /usb-disk/boxbackup-data/:/boxbackup-data/ -p 2201:2201 --rm=false richardeigenmann/boxbackup-x64
 
-FROM amd64/gcc:8 AS builder
+FROM amd64/gcc:10 AS builder
 RUN git clone https://github.com/boxbackup/boxbackup.git
 RUN apt-get update && apt-get -y install xsltproc
 RUN cd /boxbackup && ./bootstrap
