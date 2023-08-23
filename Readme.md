@@ -67,7 +67,7 @@ chmod 777 boxbackup-data ca
 # On Intel
 docker run -it --hostname boxbackup -v $(pwd)/ca/:/ca/ -v $(pwd)/boxbackup-data/:/boxbackup-data/ --rm=false boxbackupx64_bbtempserver
 # On Rapsberry Pi
-docker run -it --hostname boxbackup -v $(pwd)/ca/:/ca/ -v $(pwd)/boxbackup-data/:/boxbackup-data/ --rm=false boxbackuparm_bbtempserver
+docker run -it --hostname boxbackup -v $(pwd)/ca/:/ca/ -v $(pwd)/boxbackup-data/:/boxbackup-data/ --rm=false boxbackup-arm-bbtempserver
 
 # create server keys
 bbstored-config /etc/boxbackup 0.0.0.0 boxbackup
@@ -160,7 +160,7 @@ exit
 # For Intel:
 docker run -d --restart=always --hostname boxbackup -v $(pwd)/boxbackup-data/:/boxbackup-data/ -p 2201:2201 --rm=false boxbackupx64_bbserver
 # For Raspberry Pi
-docker run -d --restart=always --hostname boxbackup -v /usb-disk/boxbackup-data/:/boxbackup-data/ -p 2201:2201 --rm=false boxbackup-arm_bbserver
+docker run -d --restart=always --hostname boxbackup -v /usb-disk/boxbackup-data/:/boxbackup-data/ -p 2201:2201 --rm=false boxbackup-arm-bbserver
 
 # If you need to check something inside the running server:
 docker exec -it $(docker ps | grep bbserver | cut -d' ' -f1) bash
